@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+**A free-suite flake now keeps the assertion that failed.** Four free-test flakes in the flaky ledger (plan-seed-submission, native-paste, qa-only preparation-late and the gstack-upgrade fresh-shell positive control) could not be diagnosed: each failed once on a Ubicloud or remote-pregate run, passed on the serial retry, and its log died with the machine that pulled it. The runner's console printed only the failing test's name, and the flake ledger recorded only the file.
+
+### Changed
+- **`scripts/test-free-shards.ts`**: the result reporter keeps the error bun printed before each `(fail)` line: from its first `error:` line, without blanks or CI annotations, at most 8 lines of 240 characters. The FAIL epilogue prints that excerpt under each `✗ <file> — <test>` line, so it reaches the console stream that remote pregates relay. A FLAKY-PASS ledger entry now records `tests: [{ name, excerpt }]` for each file. Existing ledger readers ignore the new field. Verdicts, retries and their cap are unchanged.
+
+### Tests
+- `test/test-free-shards.test.ts` replays the Windows team-init PowerShell failure as bun printed it (run 39448730953, attempt 1) and checks the excerpt and the epilogue. The real CLI flaky-retry routes (`retry-reader`, `retry-exclusive`) now check that the ledger entry names the failed test with `Expected: 2` / `Received: 1`.
+
+## [Unreleased]
+
 **Two paid eval flakes from the 2026-10-20 trains are repaired at their cause, with no threshold, trial count or case kind changed.** ship-local-hook-preservation failed in train gate 39440559183 even though the agent told the user "you'll need to set it up by hand": the manual-integration detector knew "set up" and "wire in" only with the particle right after the verb. ship-docsync-current lost a focused trial to an unquoted `grep … --include=*`, which the shared read-only grammar refuses on purpose because the shell expands the glob first; the grammar's declared interface said "unquoted glob matches included" and never said that an option's glob has to be quoted.
 
 ### Fixed
